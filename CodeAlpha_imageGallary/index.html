@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Gallery</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+    }
+
+    .hidden { display: none; }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .form-container input, .form-container button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .form-container button {
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    .filter-buttons {
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .filter-buttons button, .filter-buttons input[type="file"] {
+      padding: 10px 12px;
+      margin: 5px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .gallery-item {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .caption {
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: 1px solid #aaa;
+      padding: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .lightbox img {
+      width: 90vw;
+      height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox span {
+      position: absolute;
+      top: 50%;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .lightbox .prev { left: 20px; }
+    .lightbox .next { right: 20px; }
+    .lightbox .close {
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      transform: none;
+    }
+
+    #message-box {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login-form" class="form-container">
+    <h2>Login</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="main-content" class="hidden">
+    <h1>My Image Gallery</h1>
+
+    <div class="filter-buttons">
+      <button onclick="filterImages('all')">All</button>
+      <button onclick="filterImages('flowers')">🌸 Flowers</button>
+      <button onclick="filterImages('temples')">🛕 Temples</button>
+      <button onclick="filterImages('animals')">🐘 Animals</button>
+      <button onclick="filterImages('cloths')">👗 Clothes</button>
+      <button onclick="filterImages('tourist places')">🗺️ Tourist Places</button>
+      <button onclick="filterImages('desert')">🏜️ Deserts</button>
+      <button onclick="filterImages('festival')">🎉 Festivals</button>
+      <button onclick="filterImages('river')">🌊 Rivers</button>
+      <button onclick="filterImages('mountain')">🏔️ Mountains</button>
+      <button onclick="filterImages('forest')">🌳 Forest</button>
+      <button onclick="filterImages('waterfall')">💦 Waterfalls</button>
+      <button onclick="filterImages('foods')">🌮 Street Food</button>
+      <button onclick="filterImages('pets')">🐶 Pets</button>
+      <button onclick="showFavorites()">❤️ Favorites</button>
+      <button onclick="showAllImages()">🔁 Back to All</button>
+
+      <input id="newFolderName" placeholder="Enter Category Name" style="padding: 10px; margin: 5px; border-radius: 4px; border: 1px solid #ccc;">
+      <button onclick="createNewFolder()">📁 Create Category</button>
+      <input type="file" id="uploadInput" accept="image/*" multiple onchange="addUploadedImages(event)">
+    </div>
+
+    <div id="message-box"></div>
+
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" onclick="closeLightbox()">×</span>
+    <span class="prev" onclick="navigate(-1)">❮</span>
+    <img id="lightbox-img">
+    <span class="next" onclick="navigate(1)">❯</span>
+  </div>
+
+  <script>
+    let favorites = [];
+    let currentIndex = 0;
+    let images = [];
+    let selectedCategory = '';
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    function login() {
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      if (u && p) {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        loadImages();
+      } else {
+        alert("Enter username and password");
+      }
+    }
+
+    function openLightbox(img) {
+      lightbox.style.display = 'flex';
+      lightboxImg.src = img.src;
+      currentIndex = images.indexOf(img);
+      startSlideshow();
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+      stopSlideshow();
+    }
+
+    function navigate(dir) {
+      currentIndex = (currentIndex + dir + images.length) % images.length;
+      lightboxImg.src = images[currentIndex].src;
+    }
+
+    function filterImages(category) {
+      selectedCategory = category;
+      document.querySelectorAll('.gallery-item').forEach(item => {
+        const cat = item.getAttribute('data-category');
+        item.style.display = category === 'all' || cat === category ? 'block' : 'none';
+      });
+    }
+
+    function addToFavorites(btn) {
+      const img = btn.parentElement.querySelector('img');
+      if (!favorites.includes(img.src)) {
+        favorites.push(img.src);
+        btn.textContent = '❤️';
+      }
+    }
+
+    function showFavorites() {
+      document.querySelectorAll('.gallery-item').forEach(item => {
+        const img = item.querySelector('img');
+        item.style.display = favorites.includes(img.src) ? 'block' : 'none';
+      });
+    }
+
+    function showAllImages() {
+      selectedCategory = '';
+      document.querySelectorAll('.gallery-item').forEach(item => item.style.display = 'block');
+    }
+
+    let slideshow;
+    function startSlideshow() {
+      slideshow = setInterval(() => navigate(1), 3000);
+    }
+
+    function stopSlideshow() {
+      clearInterval(slideshow);
+    }
+
+    function loadImages() {
+      const categories = {
+        "flowers": 5,
+        "animals": 5,
+        "temples": 5,
+        "cloths": 2,
+        "desert": 2,
+        "festival": 2,
+        "foods": 2,
+        "forest": 2,
+        "mountain": 2,
+        "pets": 2,
+        "river": 2,
+        "tourist places": 2,
+        "waterfall": 2
+      };
+
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+
+      for (const [cat, count] of Object.entries(categories)) {
+        for (let i = 1; i <= count; i++) {
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+          item.setAttribute('data-category', cat);
+
+          const img = document.createElement('img');
+          const folder = cat.replaceAll(" ", "%20");
+          img.src = `images/${folder}/${cat}${i}.jfif`;
+          img.alt = `${cat} ${i}`;
+          img.onclick = () => openLightbox(img);
+          item.appendChild(img);
+
+          const caption = document.createElement('div');
+          caption.className = 'caption';
+          caption.textContent = `${cat} ${i}`;
+          item.appendChild(caption);
+
+          const favBtn = document.createElement('button');
+          favBtn.className = 'fav-btn';
+          favBtn.textContent = '♡';
+          favBtn.onclick = function () { addToFavorites(this); };
+          item.appendChild(favBtn);
+
+          gallery.appendChild(item);
+        }
+      }
+      images = Array.from(document.querySelectorAll('.gallery-item img'));
+    }
+
+    function addUploadedImages(event) {
+      const files = event.target.files;
+      const gallery = document.getElementById('gallery');
+      const category = selectedCategory || "uploaded";
+
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+          item.setAttribute('data-category', category);
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = file.name;
+          img.onclick = () => openLightbox(img);
+          item.appendChild(img);
+
+          const caption = document.createElement('div');
+          caption.className = 'caption';
+          caption.textContent = file.name;
+          item.appendChild(caption);
+
+          const favBtn = document.createElement('button');
+          favBtn.className = 'fav-btn';
+          favBtn.textContent = '♡';
+          favBtn.onclick = function () { addToFavorites(this); };
+          item.appendChild(favBtn);
+
+          gallery.appendChild(item);
+          images.push(img);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      document.getElementById('message-box').textContent = "Image added successfully!";
+      setTimeout(() => document.getElementById('message-box').textContent = "", 2000);
+    }
+
+    function createNewFolder() {
+      const newFolder = document.getElementById('newFolderName').value.trim();
+      if (newFolder) {
+        const btn = document.createElement('button');
+        btn.textContent = `🗂️ ${newFolder}`;
+        btn.onclick = () => filterImages(newFolder);
+        document.querySelector('.filter-buttons').appendChild(btn);
+
+        document.getElementById('newFolderName').value = '';
+        document.getElementById('message-box').textContent = `Category "${newFolder}" created successfully!`;
+        setTimeout(() => document.getElementById('message-box').textContent = "", 2000);
+      }
+    }
+  </script>
+</body>
+</html>

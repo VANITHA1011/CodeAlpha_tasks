@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamil Music Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="floating-background"></div>
+
+  <!-- Search Bar -->
+  <header>
+    <input type="text" id="searchBar" placeholder="Search your song...">
+  </header>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Music Player -->
+    <div class="player">
+      <img id="cover" src="images/img1.jfif" alt="Song Cover">
+      <h2 id="title">Rise Of Dragon</h2>
+      <h3 id="artist">Leon James</h3>
+      <audio id="audio" src="songs/Rise_Of_Dragon.mp3"></audio>
+
+      <div class="controls">
+        <button id="prev">⏮</button>
+        <button id="play">▶</button>
+        <button id="next">⏭</button>
+      </div>
+
+      <div class="progress-container">
+        <span id="currentTime">0:00</span>
+        <input type="range" id="progress" value="0" max="100">
+        <span id="duration">0:00</span>
+      </div>
+
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+
+    <!-- Playlist -->
+    <div class="playlist">
+      <h2>🎵 Tamil Hits Playlist</h2>
+      <div class="carousel">
+        <div class="song" data-title="Rise Of Dragon" data-artist="Leon James" data-src="songs/Rise_Of_Dragon.mp3" data-img="images/img1.jfif">
+          <img src="images/img1.jfif" alt="Rise Of Dragon">
+        </div>
+        <div class="song" data-title="Jinguchaa" data-artist="A.R.Rahman" data-src="songs/Jinguchaa.mp3" data-img="images/img2.jfif">
+          <img src="images/img2.jfif" alt="Jinguchaa">
+        </div>
+        <div class="song" data-title="Hey Minnale" data-artist="G.V. Prakash Kumar" data-src="songs/Hey_Minnale.mp3" data-img="images/img3.jfif">
+          <img src="images/img3.jfif" alt="Hey Minnale">
+        </div>
+        <div class="song" data-title="Sawadeeka" data-artist="Various" data-src="songs/Sawadeeka.mp3" data-img="images/img4.jfif">
+          <img src="images/img4.jfif" alt="Sawadeeka">
+        </div>
+        <div class="song" data-title="Kutty Pattas" data-artist="Various" data-src="songs/Kutty_Pattas_MassTamilan.mp3" data-img="images/img5.jfif">
+          <img src="images/img5.jfif" alt="Kutty Pattas">
+        </div>
+        <div class="song" data-title="Paththavaikkum" data-artist="Various" data-src="songs/Paththavaikkum.mp3" data-img="images/img6.jfif">
+          <img src="images/img6.jfif" alt="Paththavaikkum">
+        </div>
+        <div class="song" data-title="Golden Sparrow" data-artist="Various" data-src="songs/Golden_Sparrow.mp3" data-img="images/img7.jfif">
+          <img src="images/img7.jfif" alt="Golden Sparrow">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

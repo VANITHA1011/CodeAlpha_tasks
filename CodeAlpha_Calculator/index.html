@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Scientific Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Advanced Calculator</h2>
+    <button id="themeToggle">Toggle Dark Mode</button>
+
+    <div class="tabs">
+      <button class="tab-btn" onclick="showTab('calc')">Calculator</button>
+      <button class="tab-btn" onclick="showTab('graph')">Graphing</button>
+    </div>
+
+    <!-- Calculator Tab -->
+    <div id="calc" class="tab-content">
+      <input type="text" id="display" class="display" disabled />
+      <div class="buttons">
+        <!-- Scientific -->
+        <button onclick="appendChar('Math.sin(')">sin</button>
+        <button onclick="appendChar('Math.cos(')">cos</button>
+        <button onclick="appendChar('Math.tan(')">tan</button>
+        <button onclick="appendChar('Math.log10(')">log</button>
+        <button onclick="appendChar('Math.log(')">ln</button>
+
+        <button onclick="appendChar('Math.PI')">π</button>
+        <button onclick="appendChar('Math.E')">e</button>
+        <button onclick="appendChar('Math.sqrt(')">√</button>
+        <button onclick="appendChar('**2')">x²</button>
+        <button onclick="appendChar('**')">xʸ</button>
+
+        <!-- Basics -->
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="deleteChar()">⌫</button>
+        <button onclick="appendChar('%')">%</button>
+        <button onclick="appendChar('/')">÷</button>
+        <button onclick="appendChar('*')">×</button>
+
+        <button onclick="appendChar('7')">7</button>
+        <button onclick="appendChar('8')">8</button>
+        <button onclick="appendChar('9')">9</button>
+        <button onclick="appendChar('-')">−</button>
+        <button onclick="appendChar('+')">+</button>
+
+        <button onclick="appendChar('4')">4</button>
+        <button onclick="appendChar('5')">5</button>
+        <button onclick="appendChar('6')">6</button>
+        <button onclick="appendChar('1')">1</button>
+        <button onclick="appendChar('2')">2</button>
+
+        <button onclick="appendChar('3')">3</button>
+        <button onclick="appendChar('0')">0</button>
+        <button onclick="appendChar('.')">.</button>
+        <button onclick="appendChar('(')">(</button>
+        <button onclick="appendChar(')')">)</button>
+
+        <button class="equal" onclick="calculate()">=</button>
+      </div>
+    </div>
+
+    <!-- Graphing Tab -->
+    <div id="graph" class="tab-content" style="display:none;">
+      <!-- Placeholder updated -->
+      <input type="text" id="equation" placeholder="Enter equation (e.g., Math.sin(x))" />
+      <button onclick="plotGraph()">Plot</button>
+      <canvas id="graphCanvas"></canvas>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
